@@ -1,0 +1,176 @@
+---
+title: "How to make a particularly cool plot with ggplot"
+author: "Xinrui Chen"
+date: "October 18, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE, tidy=FALSE,error=FALSE, message=FALSE, warning=FALSE, tidy.opts=list(width.cutoff=60))
+```
+
+## Introduction
+
+Exploratory data analysis is a loosely defined process. It is roughly the part between loading data in and the formal analysis you will perform. It includes (but is not limited to)
+
+  * Visualization
+  * Checks for data completeness and reliability
+  * Quantification of variability
+  * Initial evaluation of hypothesis / hypothesis generation
+
+R has several systems for making graphs, but ggplot2 is one of the most elegant and most versatile. ggplot2 implements the grammar of graphics, a coherent system for describing and building graphs.
+
+
+
+## Good plots overview
+Think about the story your plot is telling. What will someone learn while looking at your plot? Some practical things to make a plot better.
+
+  * Label the axis
+  * Have a title
+  * Make sure the title and axis are large enough
+  * Label the plot or have a legend
+  * Text on plots is great!
+  * Use color and fill effectively to differentiate groups
+  * Don’t make a plot overly complex – if it is getting too complex perhaps make two plots
+  * Get rid of non-essentials
+
+## ggplot2
+
+In ggplot2,
+
+  * the ggplot() command creates a plot, with the argument data telling us which data to use
+  * the aes() command within ggplot() indicates the desired x and y variables
+  * plots are built with elements
+  * the element geom_point() indicates that we are using a scatterplot
+
+## Prerequisites
+To access the datasets, help pages, and functions that we will use in this chapter, load the packages by running this code:
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(mdsr)
+```
+
+## A Graphing Template
+To make a graph, replace the bracketed sections in the following code with a dataset, a geom function, or a collection of mappings:
+
+```{r，eval = FALSE}
+ggplot(data = <DATA>) +
+<GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))
+```
+
+
+## Example to explore ggplot2
+
+We will be using the data set CIACountries from the mdsr package. The CIACountries data table contains the following seven variables for 236 countries:
+
+  * population (pop)
+  * area (area)
+  * gross domestic product (gdp)
+  * percentage of GDP spent on education (educ)
+  * length of roadways per unit area (roadways)
+  * internet use as a fraction of the population (net_users)
+  * number of barrels of oil produced per day (oil_prod)
+
+```{r}
+head(CIACountries)
+```
+
+### Basic plots
+
+```{r}
+g <- ggplot(data = CIACountries, aes(y=gdp, x = educ)) +
+theme(axis.text=element_text(size=10),
+axis.title=element_text(size=10),
+plot.title=element_text(size = 14)) +
+ylab('Gross Domestic Product') +
+xlab('Percentage of Gross Domestic \n Product Spent on Education') +
+ggtitle('Gross Domestic Product and Education')
+```
+
+Scatterplot using only the position aesthetic for glyphs:
+
+```{r}
+g+ geom_point()
+```
+
+Scatterplot in which net_users is mapped to color:
+
+```{r}
+g + geom_point(aes(color = net_users), size = 3) +
+guides(color=guide_legend(title="Internet Use"))
+```
+
+Scatterplot using both location and label as aesthetics:
+
+```{r}
+g + geom_text(aes(label = country, color = net_users), size = 3) +
+guides(color=guide_legend(title="Internet Use"))
+```
+
+Scatterplot in which net_users is mapped to color and educ mapped to size:
+
+```{r}
+g + geom_point(aes(color = net_users, size = roadways)) +
+guides(color=guide_legend(title="Internet Use"),
+size=guide_legend(title='Roadway'))
+```
+
+### Scale
+From the graphs that we made it is difficult to discern differences in GDP because there is a right-skew in GDP and we made a choice to use a linear scale on our plots.
+
+  * A logarithmic scale would make the plot much more readable!
+  * We will use the coord_trans() function to put our data on a logarithmic scale.
+
+
+Scatterplot using the logarithmic transform of GDP that helps to mitigate visual clustering caused by the right-skewed distribution of GDP among cities:
+
+```{r}
+g + geom_point(aes(color = net_users, size = roadways)) +
+guides(color=guide_legend(title="Internet Use"),
+size=guide_legend(title='Roadway')) +
+coord_trans(y = "log10") # rescale the y-axis value
+```
+
+As an alternative to coord_trans() we can use the scale_y_continuous() function. The only difference is where the tick marks on the axis are drawn. The functions scale_x_continuous(), scale_x_discrete(), and scale_color() all perform analogous operations on different aesthetics.
+
+Scatterplot using the logarithmic transform of GDP that helps to mitigate visual clustering caused by the right-skewed distribution of GDP among cities:
+
+```{r}
+g + geom_point(aes(color = net_users, size = roadways)) +
+guides(color=guide_legend(title="Internet Use"),
+size=guide_legend(title='Roadway')) +
+scale_y_continuous(name = 'Gross Domestic Product', trans = 'log10')
+```
+
+### Facets
+
+Using multiple aesthetics such as shape, color, and size to display multiple variables can produce a really hard to read graph! Facets are multiple side by side graphs used to display levels of categorical variables which can help.
+
+Scatterplot using facets for different ranges of Internet connectivity:
+
+```{r}
+g + geom_point(alpha = 0.9, aes(size = roadways)) +
+coord_trans(y = 'log10') +
+facet_wrap(~net_users, nrow = 1) +
+theme(legend.position = 'top') +
+theme(axis.text.x =element_text(size=10))
+```
+
+### Summary: the Layered Grammar of Graphics
+
+```{r，eval = FALSE}
+ggplot(data = <DATA>) +
+<GEOM_FUNCTION>(
+mapping = aes(<MAPPINGS>),
+stat = <STAT>,
+position = <POSITION>
+) +
+<COORDINATE_FUNCTION> +
+<FACET_FUNCTION>
+```
+
+Our new template takes seven parameters, the bracketed words that appear in the template. In practice, you rarely need to supply all seven parameters to make a graph because ggplot2 will provide useful defaults for everything except the data, the mappings, and the geom function. The seven parameters in the template compose the grammar of graphics, a formal system for building plots. The grammar of graphics is based on the insight that you can uniquely describe any plot as a combination of a dataset, a geom, a set of mappings, a stat, a position adjustment, a coordinate system, and a faceting scheme.
+
+

@@ -1,0 +1,23 @@
+name: "Xinrui(Cindy) Chen"
+navbar:
+  title: "Home"
+  type: inverse
+  left:
+    - text: "About"
+      href: about.html
+    - text: "Archive"
+      href: archive.html 
+    - icon: fa-envelope fa-lg
+      href: mailto:<xic4001@med.cornell.edu>
+    - icon: fa-github fa-lg
+      href: https://github.com/XINRUICHEN/
+    - icon: fa-twitter fa-lg
+      href: https://twitter.com/Cindy48218776
+    - icon: fa-linkedin fa-lg
+      href: https://www.linkedin.com/in/xinruic/
+output:
+  html_document:
+　　toc: true
+　　toc_float: true #侧悬浮
+
+

@@ -1,0 +1,73 @@
+---
+title: "How to use the join operations from dplyr"
+author: "CHEN XINRUI"
+date: "October 18, 2019"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE, tidy=FALSE,error=FALSE, message=FALSE, warning=FALSE, tidy.opts=list(width.cutoff=60))
+```
+
+## Introduction
+Sometimes we need to combine multiple data tables. The big direction is to merge "column" and "row". Here we mainly talk about merging "column".In this post, we will learn join function in R to combine multiple data tables.
+
+## Prerequisites
+Load the dplyr package.
+```{r}
+library(dplyr)
+```
+
+
+## Example
+```{r, include=FALSE}
+A<-read.csv("files/a.csv")
+B<-read.csv("files/b.csv")
+```
+
+There are two tables.
+
+```{r}
+A
+```
+
+```{r}
+B
+```
+
+Bin values of 1,2,3,4,5 are Shared by A and B; Bin with a value of 10,11,12 is unique to A; Bin with values of 6,7,8,9 is unique to B; The default is to join by common columns.
+
+### full_join
+The number of records after using full_join equals to "the number of records in common + the number of records unique to A + the number of records unique to B". According to the join key, the number of records in common is 5, the number of records unique to A is 3, and the number of records unique to B is 4, so the sum is 12. The result can be interpreted as the union of A and B.
+
+```{r}
+full_join(A,B,by=c("chr","bin"))
+```
+
+### inner_join
+We will use inner_join() to join the two tables. inner_join(x,y) returns all rows from x where there are matching values in y, and all columns from x and y. If there are multiple matches between x and y, all combination of the matches are returned. Note that inner_join() returns only those rows that have matches in both tables!
+
+In this example,the number of records after inner_join equals to the "number of records in common", which is 5. The result can be understood as the intersection of A and B. The merge function in R language can also be implemented.
+
+```{r}
+inner_join(A,B,by=c("chr","bin"))
+```
+
+### left_join
+With left_join() the rows of the first table are always returned, regardless of whether there is a match in the other table. left_join() returns all rows from x, and all columns from x and y. Rows in x with no match in y will have NA values in the new columns. If there are multiple matches between x and y, all combinations of the matches are returned.
+
+In this example,the number of records after using left_join equals to "the number of records of A". Of course, A needs to be put in the first parameter. 
+
+```{r}
+left_join(A,B,by=c("chr","bin"))
+```
+
+
+### right_join
+The number of records after using right_join equals to "the number of records of B".
+
+```{r}
+right_join(A,B,by=c("chr","bin"))
+```
+

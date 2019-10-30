@@ -1,0 +1,9 @@
+---
+title: "Author: Xinrui Chen"
+---
+
+### About me
+
+I am a current graduate master student in the [Healthcare Policy and Research Department](http://hpr.weill.cornell.edu) at [Weill Cornell Medicine](https://weill.cornell.edu).I have much experience in pharmaceutical fields and interest in data science.I hope I can use my analytical skillset in designing and conducting biomedical and health-related studies that contribute to improving the health and well-being of those suffering from disease.
+
+My full CV is available [here](files/CV Xinrui Chen Cornell.pdf).

@@ -1,0 +1,40 @@
+---
+title: "Technical blog post for Data Science"
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE, tidy=FALSE,error=FALSE, message=FALSE, warning=FALSE, tidy.opts=list(width.cutoff=60))
+```
+
+```{r, out.width = '30%', fig.align="left", echo = FALSE}
+library(knitr)
+include_graphics("image/DS.jpg")
+```
+
+
+####About the blog  
+
+
+
+This is a blog post sharing technical knowledge regarding R & Python for data science.It covers the following content:  
+
+
+1. Basic knowledge (R & Python)
+  * Functions
+  * Iteration  
+  
+  
+2.  Data science (R & Python)
+  * Data wrangling
+  * Data visualization   
+  
+3.  R
+  * Shiny apps
+  * Build website with Rmarkdown  
+  
+  
+4.  Advanced (R & Python)
+  * Machine learning  
+  
+  
+5.  Others
+  * Git and GitHub

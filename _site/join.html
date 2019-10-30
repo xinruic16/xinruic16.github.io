@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="CHEN XINRUI" />
+
+<meta name="date" content="2019-10-18" />
+
+<title>How to use the join operations from dplyr</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="archive.html">Archive</a>
+</li>
+<li>
+  <a href="mailto:&lt;xic4001@med.cornell.edu&gt;">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/XINRUICHEN/">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://twitter.com/Cindy48218776">
+    <span class="fa fa-twitter fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/xinruic/">
+    <span class="fa fa-linkedin fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">How to use the join operations from dplyr</h1>
+<h4 class="author">CHEN XINRUI</h4>
+<h4 class="date">October 18, 2019</h4>
+
+</div>
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Sometimes we need to combine multiple data tables. The big direction is to merge “column” and “row”. Here we mainly talk about merging “column”.In this post, we will learn join function in R to combine multiple data tables.</p>
+</div>
+<div id="prerequisites" class="section level2">
+<h2>Prerequisites</h2>
+<p>Load the dplyr package.</p>
+<pre class="r"><code>library(dplyr)</code></pre>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>There are two tables.</p>
+<pre class="r"><code>A</code></pre>
+<pre><code>##   chr bin     cn1
+## 1   1   1 0.99470
+## 2   1   2 0.90810
+## 3   1   3 0.94740
+## 4   1   4 1.04830
+## 5   1   5 1.06981
+## 6   1  10 1.03370
+## 7   1  11 1.01840
+## 8   1  12 1.04040</code></pre>
+<pre class="r"><code>B</code></pre>
+<pre><code>##   chr       cn bin n
+## 1   1 1.021300   1 1
+## 2   1 1.022644   2 2
+## 3   1 1.042275   3 3
+## 4   1 1.051029   4 4
+## 5   1 1.055831   5 5
+## 6   1 1.051415   6 6
+## 7   1 1.050681   7 7
+## 8   1 1.049706   8 8
+## 9   1 1.050982   9 9</code></pre>
+<p>Bin values of 1,2,3,4,5 are Shared by A and B; Bin with a value of 10,11,12 is unique to A; Bin with values of 6,7,8,9 is unique to B; The default is to join by common columns.</p>
+<div id="full_join" class="section level3">
+<h3>full_join</h3>
+<p>The number of records after using full_join equals to “the number of records in common + the number of records unique to A + the number of records unique to B”. According to the join key, the number of records in common is 5, the number of records unique to A is 3, and the number of records unique to B is 4, so the sum is 12. The result can be interpreted as the union of A and B.</p>
+<pre class="r"><code>full_join(A,B,by=c(&quot;chr&quot;,&quot;bin&quot;))</code></pre>
+<pre><code>##    chr bin     cn1       cn  n
+## 1    1   1 0.99470 1.021300  1
+## 2    1   2 0.90810 1.022644  2
+## 3    1   3 0.94740 1.042275  3
+## 4    1   4 1.04830 1.051029  4
+## 5    1   5 1.06981 1.055831  5
+## 6    1  10 1.03370       NA NA
+## 7    1  11 1.01840       NA NA
+## 8    1  12 1.04040       NA NA
+## 9    1   6      NA 1.051415  6
+## 10   1   7      NA 1.050681  7
+## 11   1   8      NA 1.049706  8
+## 12   1   9      NA 1.050982  9</code></pre>
+</div>
+<div id="inner_join" class="section level3">
+<h3>inner_join</h3>
+<p>We will use inner_join() to join the two tables. inner_join(x,y) returns all rows from x where there are matching values in y, and all columns from x and y. If there are multiple matches between x and y, all combination of the matches are returned. Note that inner_join() returns only those rows that have matches in both tables!</p>
+<p>In this example,the number of records after inner_join equals to the “number of records in common”, which is 5. The result can be understood as the intersection of A and B. The merge function in R language can also be implemented.</p>
+<pre class="r"><code>inner_join(A,B,by=c(&quot;chr&quot;,&quot;bin&quot;))</code></pre>
+<pre><code>##   chr bin     cn1       cn n
+## 1   1   1 0.99470 1.021300 1
+## 2   1   2 0.90810 1.022644 2
+## 3   1   3 0.94740 1.042275 3
+## 4   1   4 1.04830 1.051029 4
+## 5   1   5 1.06981 1.055831 5</code></pre>
+</div>
+<div id="left_join" class="section level3">
+<h3>left_join</h3>
+<p>With left_join() the rows of the first table are always returned, regardless of whether there is a match in the other table. left_join() returns all rows from x, and all columns from x and y. Rows in x with no match in y will have NA values in the new columns. If there are multiple matches between x and y, all combinations of the matches are returned.</p>
+<p>In this example,the number of records after using left_join equals to “the number of records of A”. Of course, A needs to be put in the first parameter.</p>
+<pre class="r"><code>left_join(A,B,by=c(&quot;chr&quot;,&quot;bin&quot;))</code></pre>
+<pre><code>##   chr bin     cn1       cn  n
+## 1   1   1 0.99470 1.021300  1
+## 2   1   2 0.90810 1.022644  2
+## 3   1   3 0.94740 1.042275  3
+## 4   1   4 1.04830 1.051029  4
+## 5   1   5 1.06981 1.055831  5
+## 6   1  10 1.03370       NA NA
+## 7   1  11 1.01840       NA NA
+## 8   1  12 1.04040       NA NA</code></pre>
+</div>
+<div id="right_join" class="section level3">
+<h3>right_join</h3>
+<p>The number of records after using right_join equals to “the number of records of B”.</p>
+<pre class="r"><code>right_join(A,B,by=c(&quot;chr&quot;,&quot;bin&quot;))</code></pre>
+<pre><code>##   chr bin     cn1       cn n
+## 1   1   1 0.99470 1.021300 1
+## 2   1   2 0.90810 1.022644 2
+## 3   1   3 0.94740 1.042275 3
+## 4   1   4 1.04830 1.051029 4
+## 5   1   5 1.06981 1.055831 5
+## 6   1   6      NA 1.051415 6
+## 7   1   7      NA 1.050681 7
+## 8   1   8      NA 1.049706 8
+## 9   1   9      NA 1.050982 9</code></pre>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

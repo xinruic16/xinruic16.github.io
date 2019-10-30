@@ -1,0 +1,17 @@
+---
+title: "Posts"
+---
+
+
+
+### Data science with R
+
+
+* [How to make a particularly cool plot with ggplot](ggplot.html)
+* [How to make plots with plotly](plotly.html)
+* [How to use the join operations from dplyr](join.html)
+* [How to make an R package](Rpackage.html)
+
+
+
+

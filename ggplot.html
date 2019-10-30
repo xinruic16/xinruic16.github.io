@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Xinrui Chen" />
+
+<meta name="date" content="2019-10-18" />
+
+<title>How to make a particularly cool plot with ggplot</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="archive.html">Archive</a>
+</li>
+<li>
+  <a href="mailto:&lt;xic4001@med.cornell.edu&gt;">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/XINRUICHEN/">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://twitter.com/Cindy48218776">
+    <span class="fa fa-twitter fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/xinruic/">
+    <span class="fa fa-linkedin fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">How to make a particularly cool plot with ggplot</h1>
+<h4 class="author">Xinrui Chen</h4>
+<h4 class="date">October 18, 2019</h4>
+
+</div>
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Exploratory data analysis is a loosely defined process. It is roughly the part between loading data in and the formal analysis you will perform. It includes (but is not limited to)</p>
+<ul>
+<li>Visualization</li>
+<li>Checks for data completeness and reliability</li>
+<li>Quantification of variability</li>
+<li>Initial evaluation of hypothesis / hypothesis generation</li>
+</ul>
+<p>R has several systems for making graphs, but ggplot2 is one of the most elegant and most versatile. ggplot2 implements the grammar of graphics, a coherent system for describing and building graphs.</p>
+</div>
+<div id="good-plots-overview" class="section level2">
+<h2>Good plots overview</h2>
+<p>Think about the story your plot is telling. What will someone learn while looking at your plot? Some practical things to make a plot better.</p>
+<ul>
+<li>Label the axis</li>
+<li>Have a title</li>
+<li>Make sure the title and axis are large enough</li>
+<li>Label the plot or have a legend</li>
+<li>Text on plots is great!</li>
+<li>Use color and fill effectively to differentiate groups</li>
+<li>Don’t make a plot overly complex – if it is getting too complex perhaps make two plots</li>
+<li>Get rid of non-essentials</li>
+</ul>
+</div>
+<div id="ggplot2" class="section level2">
+<h2>ggplot2</h2>
+<p>In ggplot2,</p>
+<ul>
+<li>the ggplot() command creates a plot, with the argument data telling us which data to use</li>
+<li>the aes() command within ggplot() indicates the desired x and y variables</li>
+<li>plots are built with elements</li>
+<li>the element geom_point() indicates that we are using a scatterplot</li>
+</ul>
+</div>
+<div id="prerequisites" class="section level2">
+<h2>Prerequisites</h2>
+<p>To access the datasets, help pages, and functions that we will use in this chapter, load the packages by running this code:</p>
+<pre class="r"><code>library(tidyverse)
+library(ggplot2)
+library(mdsr)</code></pre>
+</div>
+<div id="a-graphing-template" class="section level2">
+<h2>A Graphing Template</h2>
+<p>To make a graph, replace the bracketed sections in the following code with a dataset, a geom function, or a collection of mappings:</p>
+<pre class="r"><code>ggplot(data = &lt;DATA&gt;) +
+&lt;GEOM_FUNCTION&gt;(mapping = aes(&lt;MAPPINGS&gt;))</code></pre>
+</div>
+<div id="example-to-explore-ggplot2" class="section level2">
+<h2>Example to explore ggplot2</h2>
+<p>We will be using the data set CIACountries from the mdsr package. The CIACountries data table contains the following seven variables for 236 countries:</p>
+<ul>
+<li>population (pop)</li>
+<li>area (area)</li>
+<li>gross domestic product (gdp)</li>
+<li>percentage of GDP spent on education (educ)</li>
+<li>length of roadways per unit area (roadways)</li>
+<li>internet use as a fraction of the population (net_users)</li>
+<li>number of barrels of oil produced per day (oil_prod)</li>
+</ul>
+<pre class="r"><code>head(CIACountries)</code></pre>
+<pre><code>##          country      pop    area oil_prod   gdp educ   roadways net_users
+## 1    Afghanistan 32564342  652230        0  1900   NA 0.06462444       &gt;5%
+## 2        Albania  3029278   28748    20510 11900  3.3 0.62613051      &gt;35%
+## 3        Algeria 39542166 2381741  1420000 14500  4.3 0.04771929      &gt;15%
+## 4 American Samoa    54343     199        0 13000   NA 1.21105528      &lt;NA&gt;
+## 5        Andorra    85580     468       NA 37200   NA 0.68376068      &gt;60%
+## 6         Angola 19625353 1246700  1742000  7300  3.5 0.04125211      &gt;15%</code></pre>
+<div id="basic-plots" class="section level3">
+<h3>Basic plots</h3>
+<pre class="r"><code>g &lt;- ggplot(data = CIACountries, aes(y=gdp, x = educ)) +
+theme(axis.text=element_text(size=10),
+axis.title=element_text(size=10),
+plot.title=element_text(size = 14)) +
+ylab(&#39;Gross Domestic Product&#39;) +
+xlab(&#39;Percentage of Gross Domestic \n Product Spent on Education&#39;) +
+ggtitle(&#39;Gross Domestic Product and Education&#39;)</code></pre>
+<p>Scatterplot using only the position aesthetic for glyphs:</p>
+<pre class="r"><code>g+ geom_point()</code></pre>
+<p><img src="ggplot_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>Scatterplot in which net_users is mapped to color:</p>
+<pre class="r"><code>g + geom_point(aes(color = net_users), size = 3) +
+guides(color=guide_legend(title=&quot;Internet Use&quot;))</code></pre>
+<p><img src="ggplot_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>Scatterplot using both location and label as aesthetics:</p>
+<pre class="r"><code>g + geom_text(aes(label = country, color = net_users), size = 3) +
+guides(color=guide_legend(title=&quot;Internet Use&quot;))</code></pre>
+<p><img src="ggplot_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>Scatterplot in which net_users is mapped to color and educ mapped to size:</p>
+<pre class="r"><code>g + geom_point(aes(color = net_users, size = roadways)) +
+guides(color=guide_legend(title=&quot;Internet Use&quot;),
+size=guide_legend(title=&#39;Roadway&#39;))</code></pre>
+<p><img src="ggplot_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
+<div id="scale" class="section level3">
+<h3>Scale</h3>
+<p>From the graphs that we made it is difficult to discern differences in GDP because there is a right-skew in GDP and we made a choice to use a linear scale on our plots.</p>
+<ul>
+<li>A logarithmic scale would make the plot much more readable!</li>
+<li>We will use the coord_trans() function to put our data on a logarithmic scale.</li>
+</ul>
+<p>Scatterplot using the logarithmic transform of GDP that helps to mitigate visual clustering caused by the right-skewed distribution of GDP among cities:</p>
+<pre class="r"><code>g + geom_point(aes(color = net_users, size = roadways)) +
+guides(color=guide_legend(title=&quot;Internet Use&quot;),
+size=guide_legend(title=&#39;Roadway&#39;)) +
+coord_trans(y = &quot;log10&quot;) # rescale the y-axis value</code></pre>
+<p><img src="ggplot_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>As an alternative to coord_trans() we can use the scale_y_continuous() function. The only difference is where the tick marks on the axis are drawn. The functions scale_x_continuous(), scale_x_discrete(), and scale_color() all perform analogous operations on different aesthetics.</p>
+<p>Scatterplot using the logarithmic transform of GDP that helps to mitigate visual clustering caused by the right-skewed distribution of GDP among cities:</p>
+<pre class="r"><code>g + geom_point(aes(color = net_users, size = roadways)) +
+guides(color=guide_legend(title=&quot;Internet Use&quot;),
+size=guide_legend(title=&#39;Roadway&#39;)) +
+scale_y_continuous(name = &#39;Gross Domestic Product&#39;, trans = &#39;log10&#39;)</code></pre>
+<p><img src="ggplot_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+</div>
+<div id="facets" class="section level3">
+<h3>Facets</h3>
+<p>Using multiple aesthetics such as shape, color, and size to display multiple variables can produce a really hard to read graph! Facets are multiple side by side graphs used to display levels of categorical variables which can help.</p>
+<p>Scatterplot using facets for different ranges of Internet connectivity:</p>
+<pre class="r"><code>g + geom_point(alpha = 0.9, aes(size = roadways)) +
+coord_trans(y = &#39;log10&#39;) +
+facet_wrap(~net_users, nrow = 1) +
+theme(legend.position = &#39;top&#39;) +
+theme(axis.text.x =element_text(size=10))</code></pre>
+<p><img src="ggplot_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+</div>
+<div id="summary-the-layered-grammar-of-graphics" class="section level3">
+<h3>Summary: the Layered Grammar of Graphics</h3>
+<pre class="r"><code>ggplot(data = &lt;DATA&gt;) +
+&lt;GEOM_FUNCTION&gt;(
+mapping = aes(&lt;MAPPINGS&gt;),
+stat = &lt;STAT&gt;,
+position = &lt;POSITION&gt;
+) +
+&lt;COORDINATE_FUNCTION&gt; +
+&lt;FACET_FUNCTION&gt;</code></pre>
+<p>Our new template takes seven parameters, the bracketed words that appear in the template. In practice, you rarely need to supply all seven parameters to make a graph because ggplot2 will provide useful defaults for everything except the data, the mappings, and the geom function. The seven parameters in the template compose the grammar of graphics, a formal system for building plots. The grammar of graphics is based on the insight that you can uniquely describe any plot as a combination of a dataset, a geom, a set of mappings, a stat, a position adjustment, a coordinate system, and a faceting scheme.</p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
